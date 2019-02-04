@@ -1,4 +1,4 @@
-import sharp from 'electron-sharp';
+import jimp from 'jimp';
 import path from 'path';
 import PImage from 'pureimage';
 import streamBuffers from 'stream-buffers';
@@ -43,48 +43,43 @@ const generatePImage = async (font, textString) => {
 };
 
 const generateBaseImage = backgroundColor => {
-    return sharp({
-        create: {
-            width: 72,
-            height: 72,
-            channels: 3,
-            background: backgroundColor || '#000',
-        }
-    })
-    .png();
+    return new Promise((resolve, reject) => {
+        return new jimp(72, 72, backgroundColor, (err, img) => {
+            if (err)
+                reject(err);
+
+            resolve(img);
+        });
+    });
 };
 
-const generateTextImageBuffer = async () => {
-    return sharp(new Buffer(draw.svg()))
-        .toBuffer();
+const loadImageAndResize = imageName => {
+    return jimp.read(imageName)
+        .then(image => image.resize(54, 54));
 };
 
-const generateImageOverlayBuffer = async imageName => {
-    return sharp(imageName)
-        .resize(54)
-        .toBuffer();
+const convertBufferToJimp = buffer => {
+    return jimp.read(buffer);
 };
 
-const overlayBuffer = async (baseImage, overlayBuffer, options) => {
-    return sharp(await baseImage.toBuffer())
-        .overlayWith(overlayBuffer, options);
-};
+function removeAlphaChannel(data) {
+    const output = data.filter((_, i) => {
+        return (i + 1) % 4;
+    });
 
-const overlayImage = async (baseImage, overlayImage) => {
-    return sharp(await baseImage)
-        .overlayWith(sharp(overlayImage));
-};
+    return Buffer.from(output);
+}
 
 export function generateImage(props) {
     return new Promise((resolve, reject) => {
         font.load(async () => {
             try {
-                let baseImage = generateBaseImage(props.color);
-                baseImage = await overlayBuffer(baseImage, await generateImageOverlayBuffer(path.join(__dirname, '..', '..', 'assets', props.backgroundImage)), {left: 72/2 - 54/2, top: 0});
-                baseImage = await overlayBuffer(baseImage, await generatePImage(font, props.text));
-                baseImage = await baseImage.png().toBuffer();
-                const final = await sharp(baseImage).flatten().raw().toBuffer();
-                resolve(final);
+                let baseImage = await generateBaseImage(props.color);
+                const bkg = await loadImageAndResize(path.join(__dirname, '..', '..', 'assets', props.backgroundImage));
+                baseImage = baseImage.blit(bkg, 72/2 - 54/2, 0);
+                const txt = await convertBufferToJimp(await generatePImage(font, props.text));
+                baseImage = baseImage.blit(txt, 0, 0);
+                resolve(removeAlphaChannel(baseImage.bitmap.data));
             } catch (err) {
                 console.error(err);
                 reject(err);

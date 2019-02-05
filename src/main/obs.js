@@ -4,7 +4,7 @@ import OBSWebSocket from 'obs-websocket-js';
 
 export const obs = new OBSWebSocket();
 
-const hostname = '192.168.100.68:4444';
+const hostname = 'localhost:4444';
 let   reconnecting = false;
 
 const reconnectToOBS = () => {

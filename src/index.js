@@ -18,7 +18,7 @@ let tray = null;
 function createTray() {
     tray = new Tray(path.join(__dirname, '..', 'assets', 'icon.png'));
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'Settings', click() { createWindow(); } },
+        { label: 'Settings', click() { createMainWindow(); } },
         { label: 'Reload Configuration', click() { reloadConfig(); } },
         { label: 'Exit', click() { app.quit(); } },
     ]);
@@ -26,29 +26,31 @@ function createTray() {
     tray.setContextMenu(contextMenu);
 }
 
-const createWindow = async () => {
+const createMainWindow = async () => {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  const window = new BrowserWindow({
+    width: 1280,
+    height: 720,
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  window.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
-    mainWindow.webContents.openDevTools();
+    window.webContents.openDevTools();
   }
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
+  window.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  return window;
 };
 
 // This method will be called when Electron has finished
@@ -62,16 +64,16 @@ app.on('ready', () => {
 app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // if (process.platform !== 'darwin') {
+  //   app.quit();
+  // }
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow();
+    mainWindow = await createMainWindow();
   }
 });
 

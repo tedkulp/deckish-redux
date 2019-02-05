@@ -1,10 +1,21 @@
-import { app, BrowserWindow, Tray, Menu } from 'electron';
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { enableLiveReload } from 'electron-compile';
+import {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu
+} from 'electron';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS
+} from 'electron-devtools-installer';
+import {
+  enableLiveReload
+} from 'electron-compile';
 
 import * as path from 'path';
 
-import { reloadConfig } from './main/bootstrap';
+import {
+  reloadConfig
+} from './main/bootstrap';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -12,19 +23,11 @@ let mainWindow;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
+if (isDevMode) enableLiveReload({
+  strategy: 'react-hmr'
+});
 
 let tray = null;
-function createTray() {
-    tray = new Tray(path.join(__dirname, '..', 'assets', 'icon.png'));
-    const contextMenu = Menu.buildFromTemplate([
-        { label: 'Settings', click() { createMainWindow(); } },
-        { label: 'Reload Configuration', click() { reloadConfig(); } },
-        { label: 'Exit', click() { app.quit(); } },
-    ]);
-    tray.setToolTip('Deckish');
-    tray.setContextMenu(contextMenu);
-}
 
 const createMainWindow = async () => {
   // Create the browser window.
@@ -52,6 +55,31 @@ const createMainWindow = async () => {
 
   return window;
 };
+
+function createTray() {
+  tray = new Tray(path.join(__dirname, '..', 'assets', 'icon.png'));
+  const contextMenu = Menu.buildFromTemplate([{
+      label: 'Settings',
+      click() {
+        createMainWindow();
+      }
+    },
+    {
+      label: 'Reload Configuration',
+      click() {
+        reloadConfig();
+      }
+    },
+    {
+      label: 'Exit',
+      click() {
+        app.quit();
+      }
+    },
+  ]);
+  tray.setToolTip('Deckish');
+  tray.setContextMenu(contextMenu);
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -1,0 +1,10 @@
+
+Todo:
+  ☐ Switch to Mobx
+  ☐ Redo config file layout
+    ☐ This will make changes to layouts.js -- make sure it comes out clean
+    ☐ We want more flexibility on targets and modifiers -- not sure what that looks like yet
+  ☐ Redo bootstrap.js
+  ☐ Redo obs.js
+  ☐ Add handling for multiple zoom levels
+  ☐ Add handling for writing to a text file (for death counter)

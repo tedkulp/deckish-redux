@@ -1,19 +1,19 @@
 
 Todo:
-  ☐ Switch to Mobx
-  ☐ Redo config file layout
+  ✔ Switch to Mobx @done(19-04-01 06:56)
+  ✔ Redo config file layout @done(19-04-01 06:56)
     // What if we use nesting instead of named scenes? Does that give use more
     // flexibility?
     // What if we use x:y coords instead of nested array?  Would that make it
     // easier to read/use?
-    ☐ Rename some keys for consistency
-      ☐ keyBind -> bindKey
-      ☐ sceneSourceToggle -> toggleSource
-      ☐ globalSceneSourceToggle -> toggleSceneSource
-    ☐ This will make changes to layouts.js -- make sure it comes out clean
+    ✔ Rename some keys for consistency @done(19-04-01 06:56)
+      ✔ keyBind -> bindKey @done(19-04-01 06:56)
+      ✔ sceneSourceToggle -> toggleSource @done(19-04-01 06:56)
+      ✔ globalSceneSourceToggle -> toggleSceneSource @done(19-04-01 06:56)
+    ✔ This will make changes to layouts.js -- make sure it comes out clean @done(19-04-01 06:56)
     ☐ We want more flexibility on targets and modifiers -- not sure what that looks like yet
-  ☐ Redo bootstrap.js
-  ☐ Redo obs.js
+  ✔ Redo bootstrap.js (Just remove it) @done(19-04-01 07:42)
+  ✘ Redo obs.js @cancelled(19-04-01 06:57)
   ☐ Add handling for multiple zoom levels
     // What does this look like in the config file?
     // Could almost picture holding the momentary button and then having other

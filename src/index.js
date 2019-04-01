@@ -1,21 +1,13 @@
-import {
-  app,
-  BrowserWindow,
-  Tray,
-  Menu
-} from 'electron';
-import installExtension, {
-  REACT_DEVELOPER_TOOLS
-} from 'electron-devtools-installer';
-import {
-  enableLiveReload
-} from 'electron-compile';
+import { app, BrowserWindow, Tray, Menu } from 'electron';
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import { enableLiveReload } from 'electron-compile';
 
 import * as path from 'path';
 
-import {
-  reloadConfig
-} from './main/bootstrap';
+import { state } from './main/state';
+import { load } from './main/layouts';
+
+load();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -23,9 +15,10 @@ let mainWindow;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-if (isDevMode) enableLiveReload({
-  strategy: 'react-hmr'
-});
+if (isDevMode)
+  enableLiveReload({
+    strategy: 'react-hmr'
+  });
 
 let tray = null;
 
@@ -33,7 +26,7 @@ const createMainWindow = async () => {
   // Create the browser window.
   const window = new BrowserWindow({
     width: 1280,
-    height: 720,
+    height: 720
   });
 
   // and load the index.html of the app.
@@ -58,7 +51,8 @@ const createMainWindow = async () => {
 
 function createTray() {
   tray = new Tray(path.join(__dirname, '..', 'assets', 'icon.png'));
-  const contextMenu = Menu.buildFromTemplate([{
+  const contextMenu = Menu.buildFromTemplate([
+    {
       label: 'Settings',
       click() {
         createMainWindow();
@@ -67,7 +61,7 @@ function createTray() {
     {
       label: 'Reload Configuration',
       click() {
-        reloadConfig();
+        load();
       }
     },
     {
@@ -75,7 +69,7 @@ function createTray() {
       click() {
         app.quit();
       }
-    },
+    }
   ]);
   tray.setToolTip('Deckish');
   tray.setContextMenu(contextMenu);

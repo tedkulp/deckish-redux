@@ -1,10 +1,7 @@
-// import watch from 'redux-watch';
 import { first, get, includes, isArray, isObject, isEmpty, clone } from 'lodash';
 import { reaction } from 'mobx';
-// import util from 'util';
 import Promise from 'bluebird';
 
-// import store from './store';
 import { state, setConfig, setButton, resetButton } from './state';
 import { streamDeck, convertKey } from './stream_deck';
 import { getSceneName, getScene } from './obs';
@@ -40,8 +37,6 @@ export async function load() {
 
   await nestedLoop(layouts);
   setConfig(layouts);
-
-  // console.log(util.inspect(layouts, { depth: null, showHidden: false }));
 
   const updateActualButtons = async (newVal, oldVal) => {
     return Promise.map(newVal, async (val, idx) => {

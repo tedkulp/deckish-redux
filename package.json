@@ -56,6 +56,7 @@
     "elgato-stream-deck": "github:tedkulp/node-elgato-stream-deck",
     "jimp": "^0.6.0",
     "lodash": "^4.17.11",
+    "mobx": "^5.9.0",
     "node-hid": "^0.7.6",
     "obs-websocket-js": "^2.0.1",
     "pureimage": "^0.1.6",

@@ -1,27 +1,25 @@
-import robot from 'robotjs';
-import store from './store';
+// import robot from 'robotjs';
+// import store from './store';
+import { state } from './state';
 
-import {
-  obs,
-  getSceneName,
-  setScene,
-  setPreviousScene,
-  toggleSceneItem
-} from './obs';
-import {
-  streamDeck,
-  convertKey
-} from './stream_deck';
+// import { obs, getSceneName, setScene, setPreviousScene, toggleSceneItem } from './obs';
+// import { streamDeck, convertKey, convertKeyToXY } from './stream_deck';
 
-import {
-  load
-} from './layouts';
+import { load } from './layouts';
 
 export function reloadConfig() {
   load();
 }
 
-streamDeck.on('down', keyIndex => {
+// streamDeck.on('down', keyIndex => {
+//   const { row, col } = convertKeyToXY(keyIndex);
+//   const { currentLayout, layouts } = state;
+
+//   console.log('down', keyIndex);
+
+// const keyFound = layouts[currentLayout][row] && layouts[currentLayout][row][col];
+
+/*
   const {
     row,
     col
@@ -73,12 +71,14 @@ streamDeck.on('down', keyIndex => {
         break;
     }
   }
-});
+  */
+// });
 
-let sceneToggled = false;
+// let sceneToggled = false;
 
-streamDeck.on('up', keyIndex => {
-
+// streamDeck.on('up', keyIndex => {
+//   console.log('up', keyIndex);
+/*
   const {
     row,
     col
@@ -156,12 +156,13 @@ streamDeck.on('up', keyIndex => {
         break;
     }
   }
-});
+  */
+// });
 
 load();
 
 export default {
-  reloadConfig,
+  reloadConfig
 };
 
 // Fill the first button form the left in the first row with a solid red color. This is synchronous.

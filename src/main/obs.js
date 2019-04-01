@@ -1,5 +1,12 @@
 import OBSWebSocket from 'obs-websocket-js';
-import store from './store';
+import {
+  state,
+  setScene as setSceneInState,
+  setPreviewScene,
+  setStudioMode,
+  setInitialScene,
+  updateCurrentScene
+} from './state';
 
 export const obs = new OBSWebSocket();
 
@@ -7,98 +14,79 @@ const hostname = 'localhost:4444';
 let reconnecting = false;
 
 const reconnectToOBS = () => {
-  return obs.connect({
+  return obs
+    .connect({
       address: hostname
     })
     .then(() => {
-      reconnecting = false
+      reconnecting = false;
     })
     .then(() => obs.send('GetStudioModeStatus'))
     .then(data => {
-      store.dispatch({
-        type: 'SET_STUDIO_MODE',
-        value: data.studioMode
-      });
+      setStudioMode(data.studioMode);
     })
     .then(() => obs.send('GetCurrentScene'))
     .then(data => {
-      if (data['scene-name'])
-        data.name = data['scene-name'];
-
-      store.dispatch({
-        type: 'SET_SCENE',
-        value: data
-      });
+      if (data['scene-name']) data.name = data['scene-name'];
+      setSceneInState(data);
     })
     .then(() => console.log('[obs-websocket] Connected'))
     .catch(_err => {
-      console.log('[obs-websocket] Can\'t connect, attempting to reconnect in 5 seconds.');
+      console.log("[obs-websocket] Can't connect, attempting to reconnect in 5 seconds.");
       setTimeout(reconnectToOBS, 5000);
     });
-}
+};
 
 const connectToOBS = () => {
-  obs.connect({
+  obs
+    .connect({
       address: hostname
     })
     .then(() => {
-      reconnecting = false
+      reconnecting = false;
     })
     .then(() => obs.send('GetStudioModeStatus'))
     .then(data => {
-      store.dispatch({
-        type: 'SET_STUDIO_MODE',
-        value: data.studioMode
-      });
+      setStudioMode(data.studioMode);
     })
     .then(() => obs.send('GetCurrentScene'))
     .then(currentSceneObj => {
-      store.dispatch({
-        type: 'SET_INITIAL_SCENE',
-        value: currentSceneObj
-      });
+      setInitialScene(currentSceneObj);
     })
     .then(() => console.log('[obs-websocket] Connected'))
     .catch(_err => {
-      console.log('[obs-websocket] Can\'t connect, attempting to reconnect in 5 seconds.');
+      console.log("[obs-websocket] Can't connect, attempting to reconnect in 5 seconds.");
       setTimeout(connectToOBS, 5000);
     });
-}
+};
 
 connectToOBS();
 
 // TODO: Add some verbose flag or something
 obs.on('SwitchScenes', data => {
   if (data['scene-name']) data.name = data['scene-name'];
-  store.dispatch({
-    type: 'SET_SCENE',
-    value: data
-  });
+
+  setSceneInState(data);
 });
 
 obs.on('PreviewSceneChanged', data => {
   if (data['scene-name']) data.name = data['scene-name'];
-  store.dispatch({
-    type: 'SET_PREVIEW_SCENE',
-    value: data
-  });
+
+  setPreviewScene(data);
 });
 
 obs.on('StudioModeSwitched', data => {
-  store.dispatch({
-    type: 'SET_STUDIO_MODE',
-    value: data.newState
-  });
+  setStudioMode(data.newState);
 });
 
 obs.on('SceneItemVisibilityChanged', data => {
   if (data['scene-name']) data.name = data['scene-name'];
-  obs.send('GetCurrentScene').then(currentSceneObj => {
-    store.dispatch({
-      type: 'UPDATE_CURRENT_SCENE',
-      value: currentSceneObj
-    });
-  }).catch(err => console.error(err));
+  obs
+    .send('GetCurrentScene')
+    .then(currentSceneObj => {
+      updateCurrentScene(currentSceneObj);
+    })
+    .catch(err => console.error(err));
 });
 
 obs.on('ConnectionClosed', _err => {
@@ -115,15 +103,15 @@ obs.on('error', err => {
 });
 
 export function getScene() {
-  return store.getState().currentScene || {};
-};
+  return state.currentScene || {};
+}
 
 export function getSceneName() {
   return getScene().name || getScene()['scene-name'];
-};
+}
 
 const getPreviousScene = () => {
-  return store.getState().previousScene || {};
+  return state.previousScene || {};
 };
 
 const getPreviousSceneName = () => {
@@ -131,35 +119,58 @@ const getPreviousSceneName = () => {
 };
 
 export function setScene(sceneName) {
-  if (store.getState().studioMode) {
-    obs.send('SetPreviewScene', {
+  if (state.studioMode) {
+    obs
+      .send('SetPreviewScene', {
         'scene-name': sceneName
       })
       .catch(err => console.error(err));
   } else {
-    obs.send('SetCurrentScene', {
+    obs
+      .send('SetCurrentScene', {
         'scene-name': sceneName
       })
       .catch(err => console.error(err));
   }
-};
+}
 
 export function setPreviousScene() {
   setScene(getPreviousSceneName());
-};
+}
 
 export function toggleSceneItem(sceneName, sceneItemName) {
-  obs.send('GetSceneItemProperties', {
-    'scene-name': sceneName,
-    item: sceneItemName,
-  }).then(resp => {
-    obs.send('SetSceneItemProperties', {
-      item: sceneItemName,
-      visible: !resp.visible,
+  obs
+    .send('GetSceneItemProperties', {
       'scene-name': sceneName,
+      item: sceneItemName
+    })
+    .then(resp => {
+      obs
+        .send('SetSceneItemProperties', {
+          item: sceneItemName,
+          visible: !resp.visible,
+          'scene-name': sceneName
+        })
+        .catch(ex => {
+          console.log('toggleSceneItem/SetSceneItemProperties caused error: ', ex);
+        });
+    })
+    .catch(ex => {
+      console.log('toggleSceneItem/GetSceneItemProperties caused error: ', ex);
     });
+}
+
+export function toggleStudioMode() {
+  return obs.send('ToggleStudioMode').catch(ex => {
+    console.log('ToggleStudioMode caused error: ', ex);
   });
-};
+}
+
+export function transitionToProgram() {
+  return obs.send('TransitionToProgram').catch(ex => {
+    console.log('TransitionToProgram caused error: ', ex);
+  });
+}
 
 export default {
   obs,
@@ -167,5 +178,5 @@ export default {
   getSceneName,
   setScene,
   toggleSceneItem,
-  setPreviousScene,
+  setPreviousScene
 };

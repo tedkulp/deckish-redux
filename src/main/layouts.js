@@ -1,18 +1,14 @@
-import watch from 'redux-watch'
-import _ from 'lodash';
+// import watch from 'redux-watch';
+import { first, get, includes, isArray, isObject, isEmpty, clone } from 'lodash';
+import { reaction } from 'mobx';
+// import util from 'util';
+import Promise from 'bluebird';
 
-import store from './store';
-import {
-  streamDeck,
-  convertKey
-} from './stream_deck';
-import {
-  getSceneName,
-  getScene
-} from './obs';
-import {
-  generateImage
-} from './image';
+// import store from './store';
+import { state, setConfig, setButton, resetButton } from './state';
+import { streamDeck, convertKey } from './stream_deck';
+import { getSceneName, getScene } from './obs';
+import { generateImage } from './image';
 import ConfigFile from './config-file';
 
 /* eslint-disable consistent-return */
@@ -21,67 +17,42 @@ import ConfigFile from './config-file';
 const configFile = new ConfigFile();
 let subscribed = false;
 
-export function load() {
-  store.dispatch({
-    type: 'CLEAR_LAYOUTS'
-  });
-
+export async function load() {
   const layouts = configFile.load().get();
 
-  store.dispatch({
-    type: 'INIT_LAYOUTS',
-    value: layouts
-  });
-
-  let promises = [];
-  try {
-    promises = _.flattenDeep(_.map(layouts, (layoutButtons, layoutName, _idx) => {
-      return _.map(layoutButtons, (row, rowIdx) => {
-        return _.map(row, async (btn, btnIdx) => {
-          const innerPromsies = [];
-          if (_.get(btn, 'visual.untoggled.type') === 'image') {
-            const generatedImage = await generateImage(btn.visual.untoggled);
-            store.dispatch({
-              type: 'UPDATE_BUTTON_IMG',
-              layout: layoutName,
-              row: rowIdx,
-              index: btnIdx,
-              image: generatedImage,
-              imageType: 'untoggled'
-            });
-            innerPromsies.push(generatedImage);
+  const nestedLoop = async (obj, parent = null, grandparent = null) => {
+    return Promise.map(Object.entries(obj), async entry => {
+      if (isObject(entry[1])) {
+        return await nestedLoop(entry[1], obj, parent);
+      } else {
+        if (obj.type && obj.type === 'image') {
+          if (!obj.text) {
+            if (grandparent && grandparent.name) {
+              obj.text = grandparent.name;
+            }
           }
-          if (_.get(btn, 'visual.toggled.type') === 'image') {
-            const generatedImage = await generateImage(btn.visual.toggled);
-            store.dispatch({
-              type: 'UPDATE_BUTTON_IMG',
-              layout: layoutName,
-              row: rowIdx,
-              index: btnIdx,
-              image: generatedImage,
-              imageType: 'toggled'
-            });
-            innerPromsies.push(generatedImage);
-          }
-          return innerPromsies;
-        });
-      });
-    }));
-  } catch (err) {
-    console.error(err);
-  }
+          const generatedImage = await generateImage(obj);
+          obj['image'] = generatedImage;
+        }
+      }
+    });
+  };
 
-  const updateActualButtons = (newVal, oldVal) => {
-    newVal.forEach(async (val, idx) => {
-      if (!_.isEmpty(val)) {
+  await nestedLoop(layouts);
+  setConfig(layouts);
+
+  // console.log(util.inspect(layouts, { depth: null, showHidden: false }));
+
+  const updateActualButtons = async (newVal, oldVal) => {
+    return Promise.map(newVal, async (val, idx) => {
+      if (!isEmpty(val)) {
         if (val.type === 'color') {
           streamDeck.fillColor(idx, ...val.color);
         } else if (val.type === 'image') {
-          if ((oldVal[idx] && val != oldVal[idx]) && val.image) { // eslint-disable-line eqeqeq
+          if (oldVal[idx] && val != oldVal[idx] && val.image) {
+            // eslint-disable-line eqeqeq
             streamDeck.fillImage(idx, val.image);
           }
-          // const generatedImage = await generateImage(val);
-          // streamDeck.fillImage(idx, generatedImage);
         }
       } else {
         streamDeck.clearKey(idx);
@@ -89,136 +60,96 @@ export function load() {
     });
   };
 
+  const sendSetButton = (idx, key, propName = 'inactive') => {
+    const img = get(key, `visual.${propName}`);
+    if (img) {
+      return setButton(idx, img);
+    }
+  };
+
   const updateIndividualButtonState = (key, idx) => {
-    store.dispatch({
-      type: 'RESET_BUTTON',
-      index: idx
-    });
+    resetButton(idx);
 
     if (key && key.visual) {
-      if (key.type && key.visual.toggled) {
-        switch (key.type) {
-          case 'switchScene':
-          case 'toggleScene':
-          case 'momentaryScene':
-            const currentSceneName = getSceneName();
-            if (key.sceneName === currentSceneName) {
-              return store.dispatch({
-                type: 'SET_BUTTON',
-                index: idx,
-                value: key.visual.toggled
-              });
-            }
-            break;
-          case 'sceneSourceToggle':
-            const currentScene = getScene();
-            const mySceneName = getSceneName();
-            if (key.scenes && key.scenes[mySceneName]) {
-              const sourceName = key.scenes[mySceneName];
-              const foundSceneItem = _.find(currentScene.sources, sceneItem => sceneItem.name === sourceName);
-              if (foundSceneItem && foundSceneItem.render) {
-                return store.dispatch({
-                  type: 'SET_BUTTON',
-                  index: idx,
-                  value: key.visual.toggled
-                });
-              }
-            }
-            break;
-          case 'keyBind':
-            const heldKey = store.getState().currentHeldButton;
-            if (heldKey && key.key === heldKey.key.key && key.modifiers === heldKey.key.modifiers) {
-              return store.dispatch({
-                type: 'SET_BUTTON',
-                index: idx,
-                value: key.visual.toggled
-              });
-            }
-            break;
-          default:
-            break;
-        }
-      }
+      const currentScene = getScene();
+      const currentSceneName = getSceneName();
 
-      if (key.visual.untoggled) {
-        if (key.type) {
-          switch (key.type) {
-            case 'sceneSourceToggle':
-              const currentScene = getScene();
-              const currentSceneName = getSceneName();
-              if (key.scenes && key.scenes[currentSceneName]) {
-                const sourceName = key.scenes[currentSceneName];
-                const foundSceneItem = _.find(currentScene.sources, sceneItem => sceneItem.name === sourceName);
-                if (foundSceneItem && !foundSceneItem.render) {
-                  return store.dispatch({
-                    type: 'SET_BUTTON',
-                    index: idx,
-                    value: key.visual.untoggled
-                  });
-                }
+      switch (key.type) {
+        case 'switch':
+        case 'toggle':
+        case 'momentary':
+          return sendSetButton(
+            idx,
+            key,
+            key.sceneName === currentSceneName ? 'active' : 'inactive'
+          );
+
+        case 'toggleSource':
+          Object.entries(key.scenes).forEach(ent => {
+            let [sourceName, sceneNames] = ent;
+            if (!isArray(sceneNames)) sceneNames = [sceneNames];
+            if (includes(sceneNames, currentSceneName)) {
+              const foundSceneItem = currentScene.sources.find(
+                sceneItem => sceneItem.name === sourceName
+              );
+              if (foundSceneItem) {
+                return sendSetButton(idx, key, foundSceneItem.render ? 'active' : 'inactive');
               }
-              break;
-            default:
-              return store.dispatch({
-                type: 'SET_BUTTON',
-                index: idx,
-                value: key.visual.untoggled
-              });
-          }
-        } else {
-          return store.dispatch({
-            type: 'SET_BUTTON',
-            index: idx,
-            value: key.visual.untoggled
+            }
           });
-        }
+          break;
+
+        case 'bindKey':
+          let foundKey = false;
+
+          get(state, 'currentHeldButtons', [])
+            .slice()
+            .forEach(k => {
+              if (k && key.key === k.key && key.modifiers === k.modifiers) {
+                foundKey = true;
+                return sendSetButton(idx, key, 'active');
+              }
+            });
+
+          if (!foundKey) {
+            return sendSetButton(idx, key, 'inactive');
+          }
+          break;
+
+        default:
+          return sendSetButton(idx, key, 'inactive');
       }
     }
   };
 
-  const updateButtonState = (newVal, oldVal, objectPath) => {
-    console.log('[debug] \'%s\' changed from %s to %s', objectPath, _.get(oldVal, 'name', oldVal), _.get(newVal, 'name', newVal));
-
-    const layout = store.getState().layouts[store.getState().currentLayout];
-    const previousButtonState = store.getState().buttonState;
+  const updateButtonState = layout => {
+    const previousButtonState = clone(state.buttonState);
 
     for (let idx = 0; idx < 15; idx += 1) {
-      const {
-        row,
-        col
-      } = convertKey(idx);
-      const key = layout && layout[row] && layout[row][col];
+      const { row, col } = convertKey(idx);
+      const key = layout && layout[`${col + 1},${row + 1}`];
       updateIndividualButtonState(key, idx);
     }
 
-    const newButtonState = store.getState().buttonState;
-    return updateActualButtons(newButtonState, previousButtonState);
+    return updateActualButtons(state.buttonState, previousButtonState);
   };
 
   if (!subscribed) {
-    const currentLayoutWatcher = watch(store.getState, 'currentLayout');
-    store.subscribe(currentLayoutWatcher(updateButtonState));
+    reaction(
+      () => state.currentLayouts,
+      currentLayouts => updateButtonState(first(currentLayouts))
+    );
 
-    const currentLayoutWatcherTwo = watch(store.getState, 'currentScene');
-    store.subscribe(currentLayoutWatcherTwo(updateButtonState));
+    reaction(() => state.currentScene, _ => updateButtonState(first(state.currentLayouts)));
 
-    const currentHeldButtonWatcher = watch(store.getState, 'currentHeldButton');
-    store.subscribe(currentHeldButtonWatcher(updateButtonState));
+    reaction(() => state.currentHeldButtons, _ => updateButtonState(first(state.currentLayouts)));
 
     subscribed = true;
   }
 
-  // Wait for all the images to be generated
-  // before updating all the buttons
-  Promise.all(promises).then(() => {
-    const {
-      currentLayout,
-      previousLayout
-    } = store.getState();
-    updateButtonState(currentLayout, previousLayout, 'currentLayout');
-  });
+  updateButtonState(first(state.currentLayouts));
 }
 
 export default {
-  load,
+  load
 };

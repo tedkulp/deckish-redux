@@ -6,7 +6,10 @@ import Promise from 'bluebird';
 
 /* eslint-disable no-underscore-dangle */
 
-const registeredFont = PImage.registerFont(path.join(__dirname, '..', '..', 'assets', 'fonts', 'SourceSansPro-Regular.ttf'), 'Source Sans Pro');
+const registeredFont = PImage.registerFont(
+  path.join(__dirname, '..', '..', 'assets', 'fonts', 'SourceSansPro-Regular.ttf'),
+  'Source Sans Pro'
+);
 
 const measureText = (font, ctx, text) => {
   if (!font) console.log("WARNING. Can't find font family ", ctx._font.family); // eslint-disable-line vars-on-top
@@ -19,9 +22,9 @@ const measureText = (font, ctx, text) => {
   });
 
   return {
-    width: advance / font.font.unitsPerEm * fsize,
-    emHeightAscent: font.font.ascender / font.font.unitsPerEm * fsize,
-    emHeightDescent: font.font.descender / font.font.unitsPerEm * fsize,
+    width: (advance / font.font.unitsPerEm) * fsize,
+    emHeightAscent: (font.font.ascender / font.font.unitsPerEm) * fsize,
+    emHeightDescent: (font.font.descender / font.font.unitsPerEm) * fsize
   };
 };
 
@@ -51,8 +54,7 @@ const generatePImage = async (font, textString) => {
 const generateBaseImage = backgroundColor => {
   return new Promise((resolve, reject) => {
     return new Jimp(72, 72, backgroundColor, (err, img) => {
-      if (err)
-        reject(err);
+      if (err) reject(err);
 
       resolve(img);
     });
@@ -60,8 +62,7 @@ const generateBaseImage = backgroundColor => {
 };
 
 const loadImageAndResize = imageName => {
-  return Jimp.read(imageName)
-    .then(image => image.resize(54, 54));
+  return Jimp.read(imageName).then(image => image.resize(54, 54));
 };
 
 const convertBufferToJimp = buffer => {
@@ -81,10 +82,14 @@ export function generateImage(props) {
     registeredFont.load(async () => {
       try {
         let baseImage = await generateBaseImage(props.color);
-        const bkg = await loadImageAndResize(path.join(__dirname, '..', '..', 'assets', props.backgroundImage));
+        const bkg = await loadImageAndResize(
+          path.join(__dirname, '..', '..', 'assets', props.backgroundImage)
+        );
         baseImage = baseImage.blit(bkg, 72 / 2 - 54 / 2, 0);
-        const txt = await convertBufferToJimp(await generatePImage(registeredFont, props.text));
-        baseImage = baseImage.blit(txt, 0, 0);
+        if (props.text) {
+          const txt = await convertBufferToJimp(await generatePImage(registeredFont, props.text));
+          baseImage = baseImage.blit(txt, 0, 0);
+        }
         resolve(removeAlphaChannel(baseImage.bitmap.data));
       } catch (err) {
         console.error(err);
@@ -92,8 +97,8 @@ export function generateImage(props) {
       }
     });
   });
-};
+}
 
 export default {
-  generateImage,
+  generateImage
 };

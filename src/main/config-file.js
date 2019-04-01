@@ -6,6 +6,7 @@ function parseDataFile(filePath, defaults) {
   // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.
   // `fs.readFileSync` will return a JSON string which we then parse into a Javascript object
   try {
+    console.log(filePath);
     return JSON.parse(fs.readFileSync(filePath));
   } catch (error) {
     // if there was some kind of error, return the passed in defaults instead.
@@ -13,10 +14,12 @@ function parseDataFile(filePath, defaults) {
   }
 }
 
-class Store {
-  constructor(opts = {
-    configName: 'layout'
-  }) {
+class ConfigFile {
+  constructor(
+    opts = {
+      configName: 'layout'
+    }
+  ) {
     console.log('setting opts to', opts);
     this.opts = opts;
     // Renderer process has to get `app` module via `remote`, whereas the main process can get it directly
@@ -30,7 +33,8 @@ class Store {
     console.log('opts is', this.opts, this);
     this.data = parseDataFile(this.path, this.opts.defaults);
 
-    if (this.data == this.opts.defaults) { // eslint-disable-line eqeqeq
+    if (this.data == this.opts.defaults) {
+      // eslint-disable-line eqeqeq
       this.data = parseDataFile(path.join(__dirname, '..', '..', 'assets', 'default-layout.json'));
     }
 
@@ -39,8 +43,7 @@ class Store {
 
   // This will just return the property on the `data` object
   get(key = null) {
-    if (key)
-      return this.data[key];
+    if (key) return this.data[key];
 
     return this.data;
   }
@@ -57,4 +60,4 @@ class Store {
 }
 
 // expose the class
-export default Store;
+export default ConfigFile;

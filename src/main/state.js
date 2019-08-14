@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
-import { get, set } from 'lodash';
+import { get } from 'lodash';
+import { getNumberOfHeldKeys } from './stream_deck';
 
 export const state = observable({
   config: {},
@@ -93,18 +94,30 @@ export function resetButton(idx) {
 }
 
 // path would be like: '1,1.layout.1,1' if it was nested, '1,1' otherwise
-export function updateButtonImage(path, image, type = 'inactive') {
-  set(state, `config.${idx}.visual.${type}.image`, image);
-}
+// export function updateButtonImage(path, image, type = 'inactive') {
+//   set(state, `config.${idx}.visual.${type}.image`, image);
+// }
 
-export function addHeldButton(key) {
-  state.currentHeldButtons = [...state.currentHeldButtons, key];
-}
-
-export function removeHeldButton(key) {
-  state.currentHeldButtons.remove(key);
+export function addHeldButton(key, currentScene, previousScene = undefined) {
+  const objToAdd = {
+    currentScene,
+    key,
+    previousScene
+  };
+  state.currentHeldButtons = [...state.currentHeldButtons, objToAdd];
+  console.log('current keys:', state.currentHeldButtons);
 }
 
 export function clearHeldButtons() {
   state.currentHeldButtons = [];
+}
+
+export function removeHeldButton(key) {
+  const foundObj = state.currentHeldButtons.find(o => o.key === key);
+  state.currentHeldButtons.remove(foundObj);
+  if (getNumberOfHeldKeys() === 0) {
+    clearHeldButtons();
+  }
+  console.log('current keys:', state.currentHeldButtons);
+  return foundObj;
 }

@@ -4,7 +4,7 @@ import { enableLiveReload } from 'electron-compile';
 
 import * as path from 'path';
 
-import { state } from './main/state';
+// import { state } from './main/state';
 import { load } from './main/layouts';
 
 load();

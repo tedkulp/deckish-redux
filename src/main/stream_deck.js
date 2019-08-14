@@ -6,6 +6,10 @@ export const streamDeck = new StreamDeck();
 streamDeck.on('up', keyIndex => handleUp(keyIndex));
 streamDeck.on('down', keyIndex => handleDown(keyIndex));
 
+export function getNumberOfHeldKeys() {
+  return streamDeck.keyState.filter(k => !!k).length;
+}
+
 streamDeck.clearAllKeys();
 
 export function convertKey(keyIndex) {

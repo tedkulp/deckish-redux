@@ -30,7 +30,7 @@
         ]
       },
       "electronPackagerConfig": {
-        "packageManager": "yarn"
+        "packageManager": "npm"
       },
       "electronWinstallerConfig": {
         "name": "deckish_redux"
@@ -48,25 +48,29 @@
     }
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
+    "@material-ui/core": "^4.3.2",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/styles": "^4.3.0",
+    "bluebird": "^3.5.5",
     "dot-prop-immutable": "^1.5.0",
     "electron-compile": "^6.4.4",
-    "electron-devtools-installer": "^2.1.0",
+    "electron-devtools-installer": "^2.2.4",
     "electron-squirrel-startup": "^1.0.0",
     "elgato-stream-deck": "github:tedkulp/node-elgato-stream-deck",
-    "jimp": "^0.6.0",
-    "lodash": "^4.17.11",
-    "mobx": "^5.9.0",
-    "node-hid": "^0.7.6",
+    "jimp": "^0.6.4",
+    "lodash": "^4.17.15",
+    "mobx": "^5.13.0",
+    "node-hid": "^0.7.9",
     "obs-websocket-js": "^2.0.1",
+    "prop-types": "^15.7.2",
     "pureimage": "^0.1.6",
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
-    "react-hot-loader": "^3.0.0-beta.6",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-hot-loader": "^4.12.11",
     "robotjs": "^0.5.1",
     "stream-buffers": "^3.0.2",
     "svg.js": "^2.7.1",
-    "svgdom": "0.0.18"
+    "svgdom": "0.0.20"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
@@ -76,12 +80,12 @@
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^5.2.4",
     "electron-prebuilt-compile": "4.0.0",
-    "eslint": "^3",
-    "eslint-config-airbnb": "^15",
-    "eslint-config-prettier": "^4.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-import": "^2",
-    "eslint-plugin-jsx-a11y": "^5",
-    "eslint-plugin-prettier": "^3.0.1",
-    "eslint-plugin-react": "^7"
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.3"
   }
 }

@@ -3,13 +3,14 @@ import robot from 'robotjs';
 
 import {
   state,
-  clearHeldButtons,
   setPreviousKey,
   clearPreviousKey,
   addToCurrentLayouts,
   removeFromCurrentLayouts,
   getCurrentKey,
-  addHeldButton
+  addHeldButton,
+  removeHeldButton,
+  clearHeldButtons
 } from './state';
 import {
   setScene,
@@ -26,9 +27,10 @@ export const handleUp = keyIndex => {
 
   console.log('up', get(foundKey, 'name', '').toString());
   if (foundKey) {
+    const removedKey = removeHeldButton(foundKey);
     switch (foundKey.type) {
       case 'bindKey':
-        clearHeldButtons();
+        // clearHeldButtons();
         if (foundKey.key) {
           robot.keyToggle(foundKey.key, 'up', foundKey.modifiers ? foundKey.modifiers.slice() : []);
         }
@@ -37,7 +39,11 @@ export const handleUp = keyIndex => {
       case 'momentary':
         if (foundKey.sceneName) {
           if (!foundKey.returnSceneName || foundKey.returnSceneName === '[previousScene]') {
-            setPreviousScene();
+            if (removedKey.previousScene) {
+              setScene(removedKey.previousScene);
+            } else {
+              setPreviousScene();
+            }
           } else {
             setScene(foundKey.returnSceneName);
           }
@@ -107,6 +113,7 @@ export const handleDown = keyIndex => {
 
   console.log('down', get(foundKey, 'name', '').toString());
   if (foundKey) {
+    addHeldButton(foundKey, foundKey.sceneName, state.currentScene.name);
     switch (foundKey.type) {
       case 'bindKey':
         if (foundKey.key) {
@@ -115,7 +122,6 @@ export const handleDown = keyIndex => {
             'down',
             foundKey.modifiers ? foundKey.modifiers.slice() : []
           );
-          addHeldButton(foundKey);
         }
         break;
 

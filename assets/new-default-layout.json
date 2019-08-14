@@ -1,0 +1,491 @@
+{
+  "1,1": {
+    "type": "switch",
+    "name": "Full Screen",
+    "sceneName": "Full Screen HDMI",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "2,1": {
+    "type": "switch",
+    "name": "Full Face",
+    "sceneName": "Full Face Cam",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "3,1": {
+    "type": "switch",
+    "name": "Room",
+    "sceneName": "Full Room Cam",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "4,1": {
+    "type": "switch",
+    "name": "Key Cam",
+    "sceneName": "Full Desk Cam",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "5,1": {
+    "type": "toggle",
+    "name": "BRB",
+    "sceneName": "BRB",
+    "returnSceneName": "[previousScene]",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/pause.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/pause.png"
+      }
+    }
+  },
+  "1,2": {
+    "type": "switch",
+    "name": "Big Me",
+    "sceneName": "HDMI w/ Background",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "2,2": {
+    "type": "switch",
+    "name": "All Four",
+    "sceneName": "All Four",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "3,2": {
+    "type": "cycle",
+    "name": "Zoom!",
+    "scenes": ["ZOOM!", "ZOOM! TWO", "ZOOM! THREE", "[previousScene]"],
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "4,2": {
+    "type": "switch",
+    "name": "Starting Up",
+    "sceneName": "Starting Up",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "5,2": {
+    "type": "momentary",
+    "name": "ZOOM!",
+    "sceneName": "ZOOM!",
+    "returnSceneName": "[previousScene]",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/scene.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/scene.png"
+      }
+    }
+  },
+  "1,3": {
+    "type": "previewTransition",
+    "name": "Trans.",
+    "visual": {
+      "inactive": {
+        "type": "image",
+        "color": "#800",
+        "backgroundImage": "./images/gears.png"
+      }
+    }
+  },
+  "2,3": {
+    "type": "bindKey",
+    "name": "Toggle Mute",
+    "key": "e",
+    "modifiers": ["shift", "alt", "control"],
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#000",
+        "backgroundImage": "./images/crossbones-white.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/crossbones-white.png"
+      }
+    }
+  },
+  "4,3": {
+    "type": "momentary",
+    "name": "Sources",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#33c",
+        "backgroundImage": "./images/folder.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/folder.png"
+      }
+    },
+    "layout": {
+      "1,1": {
+        "type": "toggleSource",
+        "name": "Face - No GS",
+        "scenes": {
+          "Face Cam - No Green Screen": [
+            "Full Screen HDMI",
+            "HDMI w/ Background",
+            "Full Room Cam",
+            "Full Desk Cam"
+          ]
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "2,1": {
+        "type": "toggleSource",
+        "name": "Face - GS",
+        "scenes": {
+          "Face Cam Scene - Green Screen": [
+            "Full Screen HDMI",
+            "HDMI w/ Background",
+            "Full Room Cam",
+            "Full Desk Cam"
+          ]
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "3,1": {
+        "type": "toggleSource",
+        "name": "Desk",
+        "scenes": {
+          "Controller Cam": ["Full Screen HDMI"]
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "4,1": {
+        "type": "toggleSource",
+        "name": "Room",
+        "scenes": {
+          "Room Camera": ["Full Screen HDMI"]
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "5,1": {
+        "type": "toggleSource",
+        "name": "Room",
+        "scenes": {
+          "HDMI": "Full Screen HDMI",
+          "HDMI Group": ["HDMI w/ Background"],
+          "HDMI Scene": ["Full Desk HDMI"]
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "1,2": {
+        "type": "bindKey",
+        "name": "Green Scr.",
+        "key": "g",
+        "modifiers": ["shift", "alt", "control"],
+        "visual": {
+          "inactive": {
+            "type": "image",
+            "color": "#800",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "2,2": {
+        "type": "bindKey",
+        "name": "Blur S.",
+        "key": "h",
+        "modifiers": ["shift", "alt", "control"],
+        "visual": {
+          "inactive": {
+            "type": "image",
+            "color": "#800",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "3,2": {
+        "type": "toggleSource",
+        "name": "Chat",
+        "scenes": {
+          "Chat Group": "Full Face Cam"
+        },
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#33c",
+            "backgroundImage": "./images/gears.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      },
+      "4,2": {
+        "type": "switch",
+        "name": "Thanks!",
+        "sceneName": "Thanks for Watching",
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#000",
+            "backgroundImage": "./images/scene.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/scene.png"
+          }
+        }
+      },
+      "5,2": {
+        "type": "toggleSceneSource",
+        "name": "BRB",
+        "sceneName": "Global",
+        "sourceName": "BRB Trans",
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#800",
+            "backgroundImage": "./images/pause.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#000",
+            "backgroundImage": "./images/pause.png"
+          }
+        }
+      },
+      "1,3": {
+        "type": "toggleStudio",
+        "name": "Studio",
+        "visual": {
+          "inactive": {
+            "type": "image",
+            "color": "#008",
+            "backgroundImage": "./images/gears.png"
+          }
+        }
+      }
+    }
+  },
+  "5,3": {
+    "type": "momentary",
+    "name": "Sounds",
+    "visual": {
+      "active": {
+        "type": "image",
+        "color": "#33c",
+        "backgroundImage": "./images/folder.png"
+      },
+      "inactive": {
+        "type": "image",
+        "color": "#c33",
+        "backgroundImage": "./images/folder.png"
+      }
+    },
+    "layout": {
+      "1,1": {
+        "type": "bindKey",
+        "name": "Fail",
+        "key": "1",
+        "modifiers": ["shift", "alt", "control"],
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#000",
+            "backgroundImage": "./images/crossbones-white.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/crossbones-white.png"
+          }
+        }
+      },
+      "1,2": {
+        "type": "bindKey",
+        "name": "Applause",
+        "key": "2",
+        "modifiers": ["shift", "alt", "control"],
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#000",
+            "backgroundImage": "./images/crossbones-white.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/crossbones-white.png"
+          }
+        }
+      },
+      "1,3": {
+        "type": "bindKey",
+        "name": "Cancel",
+        "key": "0",
+        "modifiers": ["shift", "alt", "control"],
+        "visual": {
+          "active": {
+            "type": "image",
+            "color": "#000",
+            "backgroundImage": "./images/crossbones-white.png"
+          },
+          "inactive": {
+            "type": "image",
+            "color": "#c33",
+            "backgroundImage": "./images/crossbones-white.png"
+          }
+        }
+      }
+    }
+  }
+}

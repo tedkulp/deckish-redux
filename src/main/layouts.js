@@ -14,6 +14,10 @@ import ConfigFile from './config-file';
 const configFile = new ConfigFile();
 let subscribed = false;
 
+export function getConfigFile() {
+  return configFile;
+}
+
 export async function load() {
   const layouts = configFile.load().get();
 
@@ -146,5 +150,6 @@ export async function load() {
 }
 
 export default {
-  load
+  load,
+  getConfigFile
 };

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { get } from 'lodash';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
 
@@ -6,6 +7,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
 
 import ConfigGrid from './components/ConfigGrid';
+
+const electron = window.require('electron');
+const ipcRenderer = electron.ipcRenderer;
 
 const theme = createMuiTheme({});
 
@@ -32,8 +36,23 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+require('devtron').install();
+
 export default props => {
   const classes = useStyles();
+
+  useEffect(() => {
+    const configLoadedHandler = (evt, arg) => {
+      console.log('data', get(arg, 'data', {}));
+    };
+
+    ipcRenderer.on('config_loaded', configLoadedHandler);
+    ipcRenderer.send('settings_ready');
+
+    return () => {
+      ipcRenderer.removeListener('config_loaded', configLoadedHandler);
+    };
+  }, []);
 
   return (
     <React.Fragment>

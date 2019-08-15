@@ -1,4 +1,4 @@
-import electron from 'electron';
+import electron, { ipcMain, webContents } from 'electron';
 import path from 'path';
 import fs from 'fs';
 
@@ -38,6 +38,7 @@ class ConfigFile {
       this.data = parseDataFile(path.join(__dirname, '..', '..', 'assets', 'default-layout.json'));
     }
 
+    this.sendToAllRenderers();
     return this;
   }
 
@@ -56,6 +57,18 @@ class ConfigFile {
     // Also if we used an async API and our app was quit before the asynchronous write had a chance to complete,
     // we might lose that data. Note that in a real app, we would try/catch this.
     fs.writeFileSync(this.path, JSON.stringify(this.data));
+  }
+
+  sendToRenderer(wc) {
+    wc.send('config_loaded', {
+      data: this.data
+    });
+  }
+
+  sendToAllRenderers() {
+    webContents.getAllWebContents().forEach(wc => {
+      this.sendToRenderer(wc);
+    });
   }
 }
 

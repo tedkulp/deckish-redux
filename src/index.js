@@ -1,11 +1,11 @@
-import { app, BrowserWindow, Tray, Menu } from 'electron';
+import { app, BrowserWindow, Tray, Menu, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 
 import * as path from 'path';
 
 // import { state } from './main/state';
-import { load } from './main/layouts';
+import { load, getConfigFile } from './main/layouts';
 
 load();
 
@@ -38,11 +38,18 @@ const createMainWindow = async () => {
     window.webContents.openDevTools();
   }
 
+  const settingsReadyHandler = (evt, arg) => {
+    getConfigFile().sendToRenderer(window.webContents);
+  };
+
+  ipcMain.on('settings_ready', settingsReadyHandler);
+
   // Emitted when the window is closed.
   window.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+    ipcMain.removeListener('settings_ready', settingsReadyHandler);
     mainWindow = null;
   });
 

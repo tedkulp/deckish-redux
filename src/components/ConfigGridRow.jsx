@@ -6,8 +6,8 @@ import Grid from '@material-ui/core/Grid';
 import ConfigGridCell from './ConfigGridCell';
 import GridEmptySpace from './GridEmptySpace';
 
-const ConfigGridRow = props => {
-  const row = props.row || 1;
+const ConfigGridRow = ({ row }) => {
+  row = row || 1;
 
   return (
     <Grid item xs={12} container spacing={3}>
@@ -23,7 +23,7 @@ const ConfigGridRow = props => {
 };
 
 ConfigGridRow.propTypes = {
-  row: PropTypes.number
+  row: PropTypes.number.isRequired
 };
 
 export default ConfigGridRow;

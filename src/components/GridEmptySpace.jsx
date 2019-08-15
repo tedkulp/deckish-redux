@@ -32,6 +32,7 @@ const useStyles = makeStyles(theme => {
 
 const GridEmptySpace = props => {
   const classes = useStyles();
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return <Grid item {...props} classes={classes} />;
 };
 

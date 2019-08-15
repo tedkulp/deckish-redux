@@ -38,7 +38,7 @@ const createMainWindow = async () => {
     window.webContents.openDevTools();
   }
 
-  const settingsReadyHandler = (evt, arg) => {
+  const settingsReadyHandler = (_evt, _arg) => {
     getConfigFile().sendToRenderer(window.webContents);
   };
 

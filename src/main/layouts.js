@@ -24,17 +24,17 @@ export async function load() {
   const nestedLoop = async (obj, parent = null, grandparent = null) => {
     return Promise.map(Object.entries(obj), async entry => {
       if (isObject(entry[1])) {
-        return await nestedLoop(entry[1], obj, parent);
-      } else {
-        if (obj.type && obj.type === 'image') {
-          if (!obj.text) {
-            if (grandparent && grandparent.name) {
-              obj.text = grandparent.name;
-            }
+        return nestedLoop(entry[1], obj, parent);
+      }
+
+      if (obj.type && obj.type === 'image') {
+        if (!obj.text) {
+          if (grandparent && grandparent.name) {
+            obj.text = grandparent.name;
           }
-          const generatedImage = await generateImage(obj);
-          obj['image'] = generatedImage;
         }
+        const generatedImage = await generateImage(obj);
+        obj.image = generatedImage;
       }
     });
   };
@@ -48,7 +48,7 @@ export async function load() {
         if (val.type === 'color') {
           streamDeck.fillColor(idx, ...val.color);
         } else if (val.type === 'image') {
-          if (oldVal[idx] && val != oldVal[idx] && val.image) {
+          if (oldVal[idx] && val !== oldVal[idx] && val.image) {
             // eslint-disable-line eqeqeq
             streamDeck.fillImage(idx, val.image);
           }
@@ -85,6 +85,7 @@ export async function load() {
 
         case 'toggleSource':
           Object.entries(key.scenes).forEach(ent => {
+            // eslint-disable-next-line prefer-const
             let [sourceName, sceneNames] = ent;
             if (!isArray(sceneNames)) sceneNames = [sceneNames];
             if (includes(sceneNames, currentSceneName)) {

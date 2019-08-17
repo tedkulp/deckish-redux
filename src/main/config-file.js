@@ -1,4 +1,4 @@
-import electron, { ipcMain, webContents } from 'electron';
+import electron, { webContents } from 'electron';
 import path from 'path';
 import fs from 'fs';
 
@@ -33,7 +33,7 @@ class ConfigFile {
     console.log('opts is', this.opts, this);
     this.data = parseDataFile(this.path, this.opts.defaults);
 
-    if (this.data == this.opts.defaults) {
+    if (this.data === this.opts.defaults) {
       // eslint-disable-line eqeqeq
       this.data = parseDataFile(path.join(__dirname, '..', '..', 'assets', 'default-layout.json'));
     }

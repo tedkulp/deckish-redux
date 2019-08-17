@@ -57,7 +57,7 @@
     "electron-compile": "^6.4.4",
     "electron-devtools-installer": "^2.2.4",
     "electron-squirrel-startup": "^1.0.0",
-    "elgato-stream-deck": "github:tedkulp/node-elgato-stream-deck",
+    "elgato-stream-deck": "^3.0.0",
     "formik": "^1.5.8",
     "formik-material-ui": "0.0.20",
     "jimp": "^0.6.4",

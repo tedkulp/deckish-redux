@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 import { get } from 'lodash';
+// eslint-disable-next-line import/no-cycle
 import { getNumberOfHeldKeys } from './stream_deck';
 
 export const state = observable({
@@ -54,7 +55,7 @@ export function setInitialScene(sceneName) {
 }
 
 export function setScene(sceneObj) {
-  const currentScene = state.currentScene;
+  const { currentScene } = state;
   if (!state.studioMode) {
     state.currentScene = sceneObj;
     state.previousScene = currentScene;
@@ -62,7 +63,7 @@ export function setScene(sceneObj) {
 }
 
 export function setPreviewScene(sceneObj) {
-  const currentScene = state.currentScene;
+  const { currentScene } = state;
   if (state.studioMode) {
     state.currentScene = sceneObj;
     state.previousScene = currentScene;

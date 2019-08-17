@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import OBSWebSocket from 'obs-websocket-js';
 import {
   state,

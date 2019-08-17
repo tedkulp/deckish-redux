@@ -1,7 +1,8 @@
-import StreamDeck from 'elgato-stream-deck';
+import { openStreamDeck } from 'elgato-stream-deck';
+// eslint-disable-next-line import/no-cycle
 import { handleUp, handleDown } from './key_handler';
 
-export const streamDeck = new StreamDeck();
+export const streamDeck = openStreamDeck();
 
 streamDeck.on('up', keyIndex => handleUp(keyIndex));
 streamDeck.on('down', keyIndex => handleDown(keyIndex));
@@ -14,7 +15,7 @@ streamDeck.clearAllKeys();
 
 export function convertKey(keyIndex) {
   const row = Math.floor(keyIndex / 5);
-  const col = 5 - (keyIndex - 5 * row) - 1;
+  const col = keyIndex - row * 5;
   return {
     row,
     col

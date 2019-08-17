@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { get, isArray } from 'lodash';
 import robot from 'robotjs';
 
@@ -9,8 +10,7 @@ import {
   removeFromCurrentLayouts,
   getCurrentKey,
   addHeldButton,
-  removeHeldButton,
-  clearHeldButtons
+  removeHeldButton
 } from './state';
 import {
   setScene,

@@ -1,14 +1,19 @@
-import { createStore, action } from 'easy-peasy';
+import { createStore, action, computed } from 'easy-peasy';
+import { get } from 'lodash';
 import logger from 'redux-logger';
+
+const getButtonAtIndex = (state, currentIndex) => {
+  return get(state.configData, currentIndex);
+};
 
 export const store = createStore(
   {
     configData: {},
     setConfigData: action((state, payload) => {
-      console.log(state);
       state.configData = payload;
     }),
     currentIndex: undefined,
+    currentButton: computed(state => getButtonAtIndex(state, state.currentIndex)),
     setCurrentIndex: action((state, payload) => {
       state.currentIndex = payload;
     }),

@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
 
 import ConfigGrid from './ConfigGrid';
+import Drawer from './Drawer';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -56,6 +57,7 @@ export default _props => {
       <main className={classes.layout}>
         <Paper className={classes.paper}>
           <ConfigGrid />
+          <Drawer />
         </Paper>
       </main>
     </React.Fragment>

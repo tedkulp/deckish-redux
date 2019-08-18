@@ -3,14 +3,15 @@ import { get, isArray } from 'lodash';
 import robot from 'robotjs';
 
 import {
-  state,
+  getCurrentScene,
   setPreviousKey,
   clearPreviousKey,
   addToCurrentLayouts,
   removeFromCurrentLayouts,
   getCurrentKey,
   addHeldButton,
-  removeHeldButton
+  removeHeldButton,
+  getPreviousKey
 } from './state';
 import {
   setScene,
@@ -66,7 +67,7 @@ export const handleUp = keyIndex => {
         break;
 
       case 'toggle':
-        if (foundKey === state.previousKey) {
+        if (foundKey === getPreviousKey()) {
           if (!foundKey.returnSceneName || foundKey.returnSceneName === '[previousScene]') {
             setPreviousScene();
           } else {
@@ -90,8 +91,8 @@ export const handleUp = keyIndex => {
           if (entry[1] && !isArray(entry[1])) {
             scenes = [entry[1]];
           }
-          if (scenes.find(s => s === state.currentScene.name)) {
-            toggleSceneItem(state.currentScene.name, entry[0]);
+          if (scenes.find(s => s === getCurrentScene().name)) {
+            toggleSceneItem(getCurrentScene().name, entry[0]);
           }
         });
         break;
@@ -113,7 +114,7 @@ export const handleDown = keyIndex => {
 
   console.log('down', get(foundKey, 'name', '').toString());
   if (foundKey) {
-    addHeldButton(foundKey, foundKey.sceneName, state.currentScene.name);
+    addHeldButton(foundKey, foundKey.sceneName, getCurrentScene().name);
     switch (foundKey.type) {
       case 'bindKey':
         if (foundKey.key) {

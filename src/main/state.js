@@ -94,10 +94,38 @@ export function resetButton(idx) {
   state.buttonState[idx] = {};
 }
 
+export function getCurrentScene() {
+  return state.currentScene;
+}
+
+export function getPreviousScene() {
+  return state.previousScene;
+}
+
+export function getStudioMode() {
+  return state.studioMode;
+}
+
+export function getPreviousKey() {
+  return state.previousKey;
+}
+
 // path would be like: '1,1.layout.1,1' if it was nested, '1,1' otherwise
 // export function updateButtonImage(path, image, type = 'inactive') {
 //   set(state, `config.${idx}.visual.${type}.image`, image);
 // }
+
+export function getCurrentHeldButtons() {
+  return state.currentHeldButtons;
+}
+
+export function getButtonState() {
+  return state.buttonState;
+}
+
+export function getCurrentLayouts() {
+  return state.currentLayouts;
+}
 
 export function addHeldButton(key, currentScene, previousScene = undefined) {
   const objToAdd = {

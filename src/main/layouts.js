@@ -2,7 +2,15 @@ import { first, get, includes, isArray, isObject, isEmpty, clone } from 'lodash'
 import { reaction } from 'mobx';
 import Promise from 'bluebird';
 
-import { state, setConfig, setButton, resetButton } from './state';
+import {
+  setConfig,
+  setButton,
+  resetButton,
+  getCurrentHeldButtons,
+  getButtonState,
+  getCurrentLayouts,
+  getCurrentScene
+} from './state';
 import { streamDeck, convertKey } from './stream_deck';
 import { getSceneName, getScene } from './obs';
 import { generateImage } from './image';
@@ -102,14 +110,12 @@ export async function load() {
         case 'bindKey':
           let foundKey = false;
 
-          get(state, 'currentHeldButtons', [])
-            .slice()
-            .forEach(k => {
-              if (k && key.key === k.key && key.modifiers === k.modifiers) {
-                foundKey = true;
-                return sendSetButton(idx, key, 'active');
-              }
-            });
+          (getCurrentHeldButtons() || []).slice().forEach(k => {
+            if (k && key.key === k.key && key.modifiers === k.modifiers) {
+              foundKey = true;
+              return sendSetButton(idx, key, 'active');
+            }
+          });
 
           if (!foundKey) {
             return sendSetButton(idx, key, 'inactive');
@@ -123,7 +129,7 @@ export async function load() {
   };
 
   const updateButtonState = layout => {
-    const previousButtonState = clone(state.buttonState);
+    const previousButtonState = clone(getButtonState());
 
     for (let idx = 0; idx < 15; idx += 1) {
       const { row, col } = convertKey(idx);
@@ -131,23 +137,20 @@ export async function load() {
       updateIndividualButtonState(key, idx);
     }
 
-    return updateActualButtons(state.buttonState, previousButtonState);
+    return updateActualButtons(getButtonState(), previousButtonState);
   };
 
   if (!subscribed) {
-    reaction(
-      () => state.currentLayouts,
-      currentLayouts => updateButtonState(first(currentLayouts))
-    );
+    reaction(() => getCurrentLayouts(), currentLayouts => updateButtonState(first(currentLayouts)));
 
-    reaction(() => state.currentScene, _ => updateButtonState(first(state.currentLayouts)));
+    reaction(() => getCurrentScene(), _ => updateButtonState(first(getCurrentLayouts())));
 
-    reaction(() => state.currentHeldButtons, _ => updateButtonState(first(state.currentLayouts)));
+    reaction(() => getCurrentHeldButtons(), _ => updateButtonState(first(getCurrentLayouts())));
 
     subscribed = true;
   }
 
-  updateButtonState(first(state.currentLayouts));
+  updateButtonState(first(getCurrentLayouts()));
 }
 
 export default {

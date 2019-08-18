@@ -1,12 +1,14 @@
 /* eslint-disable import/no-cycle */
 import OBSWebSocket from 'obs-websocket-js';
 import {
-  state,
+  getCurrentScene,
+  getPreviousScene,
   setScene as setSceneInState,
   setPreviewScene,
   setStudioMode,
   setInitialScene,
-  updateCurrentScene
+  updateCurrentScene,
+  getStudioMode
 } from './state';
 
 export const obs = new OBSWebSocket();
@@ -104,23 +106,23 @@ obs.on('error', err => {
 });
 
 export function getScene() {
-  return state.currentScene || {};
+  return getCurrentScene() || {};
 }
 
 export function getSceneName() {
   return getScene().name || getScene()['scene-name'];
 }
 
-const getPreviousScene = () => {
-  return state.previousScene || {};
+const getPrevious = () => {
+  return getPreviousScene() || {};
 };
 
 const getPreviousSceneName = () => {
-  return getPreviousScene().name || getPreviousScene()['scene-name'];
+  return getPrevious().name || getPrevious()['scene-name'];
 };
 
 export function setScene(sceneName) {
-  if (state.studioMode) {
+  if (getStudioMode()) {
     obs
       .send('SetPreviewScene', {
         'scene-name': sceneName

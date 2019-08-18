@@ -30,7 +30,7 @@ const createMainWindow = async () => {
   });
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/index.html`);
+  window.loadURL(`file://${__dirname}/renderer/index.html`);
 
   // Open the DevTools.
   if (isDevMode) {

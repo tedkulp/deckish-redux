@@ -1,15 +1,15 @@
-import { first, get, includes, isArray, isObject, isEmpty, clone } from 'lodash';
-import { reaction } from 'mobx';
+import { first, get, includes, isArray, isObject, isEmpty, clone, isEqual } from 'lodash';
+import listen from 'listate';
 import Promise from 'bluebird';
 
 import {
+  store,
   setConfig,
   setButton,
   resetButton,
   getCurrentHeldButtons,
   getButtonState,
-  getCurrentLayouts,
-  getCurrentScene
+  getCurrentLayouts
 } from './state';
 import { streamDeck, convertKey } from './stream_deck';
 import { getSceneName, getScene } from './obs';
@@ -21,6 +21,9 @@ import ConfigFile from './config-file';
 
 const configFile = new ConfigFile();
 let subscribed = false;
+
+// eslint-disable-next-line no-prototype-builtins
+const arrayHasIndex = (array, index) => Array.isArray(array) && array.hasOwnProperty(index);
 
 export function getConfigFile() {
   return configFile;
@@ -56,7 +59,7 @@ export async function load() {
         if (val.type === 'color') {
           streamDeck.fillColor(idx, ...val.color);
         } else if (val.type === 'image') {
-          if (oldVal[idx] && val !== oldVal[idx] && val.image) {
+          if (arrayHasIndex(oldVal, idx) && !isEqual(val, oldVal[idx]) && val.image) {
             // eslint-disable-line eqeqeq
             streamDeck.fillImage(idx, val.image);
           }
@@ -141,12 +144,24 @@ export async function load() {
   };
 
   if (!subscribed) {
-    reaction(() => getCurrentLayouts(), currentLayouts => updateButtonState(first(currentLayouts)));
-
-    reaction(() => getCurrentScene(), _ => updateButtonState(first(getCurrentLayouts())));
-
-    reaction(() => getCurrentHeldButtons(), _ => updateButtonState(first(getCurrentLayouts())));
-
+    listen(store, {
+      filter: state => state.currentLayouts,
+      handle: _data => {
+        updateButtonState(first(getCurrentLayouts()));
+      }
+    });
+    listen(store, {
+      filter: state => state.currentScene,
+      handle: _data => {
+        updateButtonState(first(getCurrentLayouts()));
+      }
+    });
+    listen(store, {
+      filter: state => state.currentHeldButtons,
+      handle: _data => {
+        updateButtonState(first(getCurrentLayouts()));
+      }
+    });
     subscribed = true;
   }
 

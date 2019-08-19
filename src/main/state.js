@@ -1,9 +1,10 @@
-import { observable } from 'mobx';
-import { get } from 'lodash';
+import { get, isEqual } from 'lodash';
+// eslint-disable-next-line no-unused-vars
+import { createStore, action, computed } from 'easy-peasy';
 // eslint-disable-next-line import/no-cycle
 import { getNumberOfHeldKeys } from './stream_deck';
 
-export const state = observable({
+export const store = createStore({
   config: {},
   currentLayout: {},
   currentLayouts: [],
@@ -12,21 +13,99 @@ export const state = observable({
   currentHeldButtons: [],
   studioMode: false,
   previousKey: null,
-  buttonState: Array(15).fill({})
+  buttonState: Array(15).fill({}),
+
+  clearPreviousKey: action((state, _payload) => {
+    state.previousKey = null;
+  }),
+  resetButton: action((state, payload) => {
+    state.buttonState[payload.idx] = {};
+  }),
+  resetCurrentLayout: action((state, _payload) => {
+    state.currentLayout = state.config;
+    state.currentLayouts = [state.config];
+  }),
+
+  setButton: action((state, payload) => {
+    state.buttonState[payload.idx] = payload.value;
+  }),
+  setConfig: action((state, payload) => {
+    state.config = payload;
+    state.currentLayout = state.config;
+    state.currentLayouts = [state.config];
+  }),
+  setCurrentLayout: action((state, payload) => {
+    state.currentLayout = payload;
+  }),
+  setInitialScene: action((state, payload) => {
+    state.currentScene = payload;
+    state.previousScene = payload;
+  }),
+  setPreviousKey: action((state, payload) => {
+    state.previousKey = payload;
+  }),
+  setPreviewScene: action((state, payload) => {
+    const { currentScene, studioMode } = state;
+    if (studioMode) {
+      state.currentScene = payload;
+      state.previousScene = currentScene;
+    }
+  }),
+  setScene: action((state, payload) => {
+    const { currentScene, studioMode } = state;
+    if (!studioMode) {
+      state.currentScene = payload;
+      state.previousScene = currentScene;
+    }
+  }),
+  setStudioMode: action((state, payload) => {
+    state.studioMode = !!payload;
+  }),
+
+  updateCurrentScene: action((state, payload) => {
+    state.currentScene = payload;
+  }),
+
+  addHeldButton: action((state, payload) => {
+    state.currentHeldButtons = [...state.currentHeldButtons, payload];
+    // console.log('current keys:', state.currentHeldButtons);
+  }),
+  clearHeldButtons: action((state, _payload) => {
+    state.currentHeldButtons = [];
+  }),
+  removeHeldButton: action((state, payload) => {
+    const idx = state.currentHeldButtons.findIndex(b => isEqual(b, payload));
+    state.currentHeldButtons.splice(idx, 1);
+    if (getNumberOfHeldKeys() === 0) {
+      state.currentHeldButtons = [];
+    }
+    // console.log('current keys:', state.currentHeldButtons);
+  }),
+
+  addToCurrentLayouts: action((state, payload) => {
+    state.currentLayouts = [payload, ...state.currentLayouts];
+  }),
+  removeFromCurrentLayouts: action((state, payload) => {
+    const idx = state.currentLayouts.findIndex(cl => isEqual(cl, payload));
+    state.currentLayouts.splice(idx, 1);
+  })
 });
 
+export const { getState, getActions, dispatch } = store;
+export const actions = store.getActions;
+
 export function addToCurrentLayouts(layout) {
-  state.currentLayouts = [layout, ...state.currentLayouts];
+  getActions().addToCurrentLayouts(layout);
 }
 
 export function removeFromCurrentLayouts(layout) {
-  state.currentLayouts = state.currentLayouts.filter(lo => lo !== layout);
+  getActions().removeFromCurrentLayouts(layout);
 }
 
 //  TODO: This feels like we're going to need to start a new file for layout handling
 export function getCurrentKey(stringKey) {
   let result = null;
-  state.currentLayouts.forEach(lo => {
+  getState().currentLayouts.forEach(lo => {
     const foundKey = get(lo, stringKey);
     if (!result && foundKey) {
       result = foundKey;
@@ -36,117 +115,91 @@ export function getCurrentKey(stringKey) {
 }
 
 export function setCurrentLayout(layout) {
-  state.currentLayout = layout;
+  getActions().setCurrentLayout(layout);
 }
 
 export function resetCurrentLayout() {
-  state.currentLayout = state.config;
-  state.currentLayouts = [state.config];
+  getActions().setCurrentLayout();
 }
 
 export function setConfig(config) {
-  state.config = config;
-  resetCurrentLayout();
+  getActions().setConfig(config);
 }
 
 export function setInitialScene(sceneName) {
-  state.currentScene = sceneName;
-  state.previousScene = sceneName;
+  getActions().setInitialScene(sceneName);
 }
 
 export function setScene(sceneObj) {
-  const { currentScene } = state;
-  if (!state.studioMode) {
-    state.currentScene = sceneObj;
-    state.previousScene = currentScene;
-  }
+  getActions().setScene(sceneObj);
 }
 
 export function setPreviewScene(sceneObj) {
-  const { currentScene } = state;
-  if (state.studioMode) {
-    state.currentScene = sceneObj;
-    state.previousScene = currentScene;
-  }
+  getActions().setPreviewScene(sceneObj);
 }
 
 export function setPreviousKey(key) {
-  state.previousKey = key;
+  getActions().setPreviousKey(key);
 }
 
 export function clearPreviousKey() {
-  state.previousKey = null;
+  getActions().clearPreviousKey();
 }
 
 export function updateCurrentScene(sceneObj) {
-  state.currentScene = sceneObj;
+  getActions().updateCurrentScene(sceneObj);
 }
 
 export function setStudioMode(enabled) {
-  state.studioMode = !!enabled;
+  getActions().setStudioMode(enabled);
 }
 
 export function setButton(idx, value) {
-  state.buttonState[idx] = value;
+  getActions().setButton({ idx, value });
 }
 
 export function resetButton(idx) {
-  state.buttonState[idx] = {};
+  getActions().setButton({ idx });
 }
 
 export function getCurrentScene() {
-  return state.currentScene;
+  return getState().currentScene;
 }
 
 export function getPreviousScene() {
-  return state.previousScene;
+  return getState().previousScene;
 }
 
 export function getStudioMode() {
-  return state.studioMode;
+  return getState().studioMode;
 }
 
 export function getPreviousKey() {
-  return state.previousKey;
+  return getState().previousKey;
 }
 
-// path would be like: '1,1.layout.1,1' if it was nested, '1,1' otherwise
-// export function updateButtonImage(path, image, type = 'inactive') {
-//   set(state, `config.${idx}.visual.${type}.image`, image);
-// }
-
 export function getCurrentHeldButtons() {
-  return state.currentHeldButtons;
+  return getState().currentHeldButtons;
 }
 
 export function getButtonState() {
-  return state.buttonState;
+  return getState().buttonState;
 }
 
 export function getCurrentLayouts() {
-  return state.currentLayouts;
+  return getState().currentLayouts;
 }
 
 export function addHeldButton(key, currentScene, previousScene = undefined) {
-  const objToAdd = {
-    currentScene,
-    key,
-    previousScene
-  };
-  state.currentHeldButtons = [...state.currentHeldButtons, objToAdd];
-  console.log('current keys:', state.currentHeldButtons);
+  getActions().addHeldButton({ key, currentScene, previousScene });
 }
 
 export function clearHeldButtons() {
-  state.currentHeldButtons = [];
+  getActions().clearHeldButtons();
 }
 
 export function removeHeldButton(key) {
-  const foundObj = state.currentHeldButtons.find(o => o.key === key);
-  state.currentHeldButtons.remove(foundObj);
-  if (getNumberOfHeldKeys() === 0) {
-    clearHeldButtons();
-  }
-  console.log('current keys:', state.currentHeldButtons);
+  const foundObj = getState().currentHeldButtons.find(o => o.key === key);
+  getActions().removeHeldButton(foundObj);
   return foundObj;
 }

@@ -26,7 +26,7 @@ export const handleUp = keyIndex => {
   const stringKey = convertKeyToStringKey(keyIndex);
   const foundKey = getCurrentKey(stringKey);
 
-  console.log('up', get(foundKey, 'name', '').toString());
+  // console.log('up', get(foundKey, 'name', '').toString());
   if (foundKey) {
     const removedKey = removeHeldButton(foundKey);
     switch (foundKey.type) {
@@ -112,7 +112,7 @@ export const handleDown = keyIndex => {
   const stringKey = convertKeyToStringKey(keyIndex);
   const foundKey = getCurrentKey(stringKey);
 
-  console.log('down', get(foundKey, 'name', '').toString());
+  // console.log('down', get(foundKey, 'name', '').toString());
   if (foundKey) {
     addHeldButton(foundKey, foundKey.sceneName, getCurrentScene().name);
     switch (foundKey.type) {

@@ -52,7 +52,6 @@
     "@material-ui/icons": "^4.2.1",
     "@material-ui/styles": "^4.3.0",
     "bluebird": "^3.5.5",
-    "dot-prop-immutable": "^1.5.0",
     "easy-peasy": "^3.0.1",
     "electron-compile": "^6.4.4",
     "electron-devtools-installer": "^2.2.4",
@@ -61,8 +60,8 @@
     "formik": "^1.5.8",
     "formik-material-ui": "0.0.20",
     "jimp": "^0.6.4",
+    "listate": "^1.0.3",
     "lodash": "^4.17.15",
-    "mobx": "^5.13.0",
     "node-hid": "^0.7.9",
     "obs-websocket-js": "^2.0.1",
     "prop-types": "^15.7.2",
@@ -72,9 +71,7 @@
     "react-hot-loader": "^4.12.11",
     "redux-logger": "^3.0.6",
     "robotjs": "^0.5.1",
-    "stream-buffers": "^3.0.2",
-    "svg.js": "^2.7.1",
-    "svgdom": "0.0.20"
+    "stream-buffers": "^3.0.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",

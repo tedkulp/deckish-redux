@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { get, isArray } from 'lodash';
+import { isArray } from 'lodash';
 import robot from 'robotjs';
 
 import {

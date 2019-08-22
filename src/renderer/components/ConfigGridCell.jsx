@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 import { makeStyles } from '@material-ui/styles';
-import { useStoreActions } from 'easy-peasy';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+
+import { getButtonAtIndex } from '../model';
 
 const useStyles = makeStyles(_theme => ({
   cell: {
@@ -17,6 +20,7 @@ const useStyles = makeStyles(_theme => ({
 
 const ConfigGridCell = ({ col, row }) => {
   const classes = useStyles();
+  const state = useStoreState(st => st);
   const setCurrentIndex = useStoreActions(actions => actions.setCurrentIndex);
 
   col = col || 1;
@@ -26,7 +30,7 @@ const ConfigGridCell = ({ col, row }) => {
 
   return (
     <Grid item xs={2} onClick={() => setCurrentIndex(currentIndex)}>
-      <Paper className={classes.cell}>{currentIndex}</Paper>
+      <Paper className={classes.cell}>{get(getButtonAtIndex(state, currentIndex), 'name')}</Paper>
     </Grid>
   );
 };

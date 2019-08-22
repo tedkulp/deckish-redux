@@ -10,6 +10,7 @@
           "transform-decorators-legacy",
           "transform-async-to-generator",
           "transform-es2015-classes",
+          "transform-object-rest-spread",
           "react-hot-loader/babel"
         ],
         "sourceMaps": "inline"
@@ -24,7 +25,8 @@
         "plugins": [
           "transform-decorators-legacy",
           "transform-async-to-generator",
-          "transform-es2015-classes"
+          "transform-es2015-classes",
+          "transform-object-rest-spread"
         ],
         "sourceMaps": "none"
       }

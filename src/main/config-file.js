@@ -1,4 +1,4 @@
-import electron, { webContents } from 'electron';
+import electron from 'electron';
 import path from 'path';
 import fs from 'fs';
 
@@ -38,7 +38,7 @@ class ConfigFile {
       this.data = parseDataFile(path.join(__dirname, '..', '..', 'assets', 'default-layout.json'));
     }
 
-    this.sendToAllRenderers();
+    // this.sendToAllRenderers();
     return this;
   }
 
@@ -59,17 +59,17 @@ class ConfigFile {
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 
-  sendToRenderer(wc) {
-    wc.send('config_loaded', {
-      data: this.data
-    });
-  }
+  // sendToRenderer(wc) {
+  //   wc.send('config_loaded', {
+  //     data: this.data
+  //   });
+  // }
 
-  sendToAllRenderers() {
-    webContents.getAllWebContents().forEach(wc => {
-      this.sendToRenderer(wc);
-    });
-  }
+  // sendToAllRenderers() {
+  //   webContents.getAllWebContents().forEach(wc => {
+  //     this.sendToRenderer(wc);
+  //   });
+  // }
 }
 
 // expose the class

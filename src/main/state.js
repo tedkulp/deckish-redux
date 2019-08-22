@@ -1,94 +1,28 @@
-import { get, isEqual } from 'lodash';
-// eslint-disable-next-line no-unused-vars
-import { createStore, action, computed } from 'easy-peasy';
+import { get } from 'lodash';
+import { createStore } from 'easy-peasy';
+import listen from 'listate';
+import { forwardToRenderer, replayActionMain } from 'electron-redux';
 // eslint-disable-next-line import/no-cycle
-import { getNumberOfHeldKeys } from './stream_deck';
+import mainModel from './model';
+import rendererModel from '../renderer/model';
 
-export const store = createStore({
-  config: {},
-  currentLayout: {},
-  currentLayouts: [],
-  currentScene: null,
-  previousScene: null,
-  currentHeldButtons: [],
-  studioMode: false,
-  previousKey: null,
-  buttonState: Array(15).fill({}),
+export const store = createStore(
+  {
+    ...mainModel,
+    ...rendererModel
+  },
+  {
+    middleware: [forwardToRenderer]
+  }
+);
 
-  clearPreviousKey: action((state, _payload) => {
-    state.previousKey = null;
-  }),
-  resetButton: action((state, payload) => {
-    state.buttonState[payload.idx] = {};
-  }),
-  resetCurrentLayout: action((state, _payload) => {
-    state.currentLayout = state.config;
-    state.currentLayouts = [state.config];
-  }),
+replayActionMain(store);
 
-  setButton: action((state, payload) => {
-    state.buttonState[payload.idx] = payload.value;
-  }),
-  setConfig: action((state, payload) => {
-    state.config = payload;
-    state.currentLayout = state.config;
-    state.currentLayouts = [state.config];
-  }),
-  setCurrentLayout: action((state, payload) => {
-    state.currentLayout = payload;
-  }),
-  setInitialScene: action((state, payload) => {
-    state.currentScene = payload;
-    state.previousScene = payload;
-  }),
-  setPreviousKey: action((state, payload) => {
-    state.previousKey = payload;
-  }),
-  setPreviewScene: action((state, payload) => {
-    const { currentScene, studioMode } = state;
-    if (studioMode) {
-      state.currentScene = payload;
-      state.previousScene = currentScene;
-    }
-  }),
-  setScene: action((state, payload) => {
-    const { currentScene, studioMode } = state;
-    if (!studioMode) {
-      state.currentScene = payload;
-      state.previousScene = currentScene;
-    }
-  }),
-  setStudioMode: action((state, payload) => {
-    state.studioMode = !!payload;
-  }),
-
-  updateCurrentScene: action((state, payload) => {
-    state.currentScene = payload;
-  }),
-
-  addHeldButton: action((state, payload) => {
-    state.currentHeldButtons = [...state.currentHeldButtons, payload];
-    // console.log('current keys:', state.currentHeldButtons);
-  }),
-  clearHeldButtons: action((state, _payload) => {
-    state.currentHeldButtons = [];
-  }),
-  removeHeldButton: action((state, payload) => {
-    const idx = state.currentHeldButtons.findIndex(b => isEqual(b, payload));
-    state.currentHeldButtons.splice(idx, 1);
-    if (getNumberOfHeldKeys() === 0) {
-      state.currentHeldButtons = [];
-    }
-    // console.log('current keys:', state.currentHeldButtons);
-  }),
-
-  addToCurrentLayouts: action((state, payload) => {
-    state.currentLayouts = [payload, ...state.currentLayouts];
-  }),
-  removeFromCurrentLayouts: action((state, payload) => {
-    const idx = state.currentLayouts.findIndex(cl => isEqual(cl, payload));
-    state.currentLayouts.splice(idx, 1);
-  })
+listen(store, {
+  filter: state => get(state, 'currentIndex'),
+  handle: data => {
+    console.log(data.current);
+  }
 });
 
 export const { getState, getActions, dispatch } = store;
@@ -112,6 +46,18 @@ export function getCurrentKey(stringKey) {
     }
   });
   return result;
+}
+
+export function addScene(scene) {
+  getActions().addScene(scene);
+}
+
+export function clearScenes() {
+  getActions().clearScenes();
+}
+
+export function setScenes(scenes) {
+  getActions().setScenes(scenes);
 }
 
 export function setCurrentLayout(layout) {

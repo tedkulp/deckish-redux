@@ -8,7 +8,8 @@ import {
   setStudioMode,
   setInitialScene,
   updateCurrentScene,
-  getStudioMode
+  getStudioMode,
+  setScenes
 } from './state';
 
 export const obs = new OBSWebSocket();
@@ -33,6 +34,10 @@ const reconnectToOBS = () => {
       if (data['scene-name']) data.name = data['scene-name'];
       setSceneInState(data);
     })
+    .then(() => obs.send('GetSceneList'))
+    .then(sceneList => {
+      setScenes(sceneList.scenes);
+    })
     .then(() => console.log('[obs-websocket] Connected'))
     .catch(_err => {
       console.log("[obs-websocket] Can't connect, attempting to reconnect in 5 seconds.");
@@ -55,6 +60,10 @@ const connectToOBS = () => {
     .then(() => obs.send('GetCurrentScene'))
     .then(currentSceneObj => {
       setInitialScene(currentSceneObj);
+    })
+    .then(() => obs.send('GetSceneList'))
+    .then(sceneList => {
+      setScenes(sceneList.scenes);
     })
     .then(() => console.log('[obs-websocket] Connected'))
     .catch(_err => {
@@ -80,6 +89,12 @@ obs.on('PreviewSceneChanged', data => {
 
 obs.on('StudioModeSwitched', data => {
   setStudioMode(data.newState);
+});
+
+obs.on('ScenesChanged', () => {
+  obs.send('GetSceneList').then(sceneList => {
+    setScenes(sceneList.scenes);
+  });
 });
 
 obs.on('SceneItemVisibilityChanged', data => {

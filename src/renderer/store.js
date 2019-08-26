@@ -17,11 +17,11 @@ export const store = createStore(
   },
   {
     initialState,
-    middleware: [logger],
-    preMiddleware: [
+    middleware: [
       forwardToMainWithParams({
         blacklist: [/^@/, /^@@/, /^redux-form/]
-      })
+      }),
+      logger
     ]
   }
 );

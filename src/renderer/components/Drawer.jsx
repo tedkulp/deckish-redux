@@ -7,19 +7,38 @@ import { get, merge } from 'lodash';
 
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 
-const useStyles = makeStyles({
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+const useStyles = makeStyles(theme => ({
   field: {
     marginBottom: '1em'
   },
   container: {
     padding: '1em',
     width: 350
+  },
+  editLayoutButton: {
+    marginTop: theme.spacing(2)
+  },
+  expandedHeader: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
+  },
+  expandedDetails: {
+    display: 'inherit',
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   }
-});
+}));
 
 const defaultButton = {
   name: '',
@@ -51,6 +70,16 @@ const hasBindKey = ({ type = '' }) => {
 
 const hasLayout = ({ type = '' }) => {
   return type === 'momentary';
+};
+
+const hasActiveImage = ({ type = '' }) => {
+  return (
+    type === 'switch' ||
+    type === 'toggle' ||
+    type === 'toggleSource' ||
+    type === 'toggleSceneSource' ||
+    type === 'momentary'
+  );
 };
 
 export default () => {
@@ -138,9 +167,6 @@ export default () => {
                   </Field>
                 </FormControl>
               )}
-              {hasLayout(values) && (
-                <Button onClick={() => editNestedLayout(currentIndex)}>Edit Nested Layout</Button>
-              )}
               {hasBindKey(values) && (
                 <React.Fragment>
                   <Field
@@ -159,6 +185,114 @@ export default () => {
                     </Field>
                   </FormControl>
                 </React.Fragment>
+              )}
+              {hasActiveImage(values) && (
+                <ExpansionPanel>
+                  <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    className={classes.expandedHeader}
+                  >
+                    <Typography>Active Image</Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails className={classes.expandedDetails}>
+                    <FormControl className={classes.field} fullWidth>
+                      <InputLabel htmlFor="visual.active.type">Type</InputLabel>
+                      <Field name="visual.active.type" select fullWidth component={Select}>
+                        <MenuItem value="image">Image</MenuItem>
+                        <MenuItem value="color">Color</MenuItem>
+                      </Field>
+                    </FormControl>
+                    <FormControl className={classes.field} fullWidth>
+                      <InputLabel htmlFor="visual.active.backgroundImage">Image</InputLabel>
+                      <Field
+                        name="visual.active.backgroundImage"
+                        select
+                        fullWidth
+                        component={Select}
+                      >
+                        <MenuItem value="./images/crossbones.png">./images/crossbones.png</MenuItem>
+                        <MenuItem value="./images/crossbones-white.png">
+                          ./images/crossbones-white.png
+                        </MenuItem>
+                        <MenuItem value="./images/folder.png">./images/folder.png</MenuItem>
+                        <MenuItem value="./images/gears.png">./images/gears.png</MenuItem>
+                        <MenuItem value="./images/pause.png">./images/pause.png</MenuItem>
+                        <MenuItem value="./images/scene.png">./images/scene.png</MenuItem>
+                      </Field>
+                    </FormControl>
+                    <Field
+                      name="visual.active.color"
+                      label="Color"
+                      component={TextField}
+                      fullWidth
+                      className={classes.field}
+                    />
+                    <Field
+                      name="visual.active.text"
+                      label="Text"
+                      component={TextField}
+                      fullWidth
+                      className={classes.field}
+                    />
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              )}
+              <ExpansionPanel>
+                <ExpansionPanelSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  className={classes.expandedHeader}
+                >
+                  <Typography>Inactive Image</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails className={classes.expandedDetails}>
+                  <FormControl className={classes.field} fullWidth>
+                    <InputLabel htmlFor="visual.inactive.type">Type</InputLabel>
+                    <Field name="visual.inactive.type" select fullWidth component={Select}>
+                      <MenuItem value="image">Image</MenuItem>
+                      <MenuItem value="color">Color</MenuItem>
+                    </Field>
+                  </FormControl>
+                  <FormControl className={classes.field} fullWidth>
+                    <InputLabel htmlFor="visual.inactive.backgroundImage">Image</InputLabel>
+                    <Field
+                      name="visual.inactive.backgroundImage"
+                      select
+                      fullWidth
+                      component={Select}
+                    >
+                      <MenuItem value="./images/crossbones.png">./images/crossbones.png</MenuItem>
+                      <MenuItem value="./images/crossbones-white.png">
+                        ./images/crossbones-white.png
+                      </MenuItem>
+                      <MenuItem value="./images/folder.png">./images/folder.png</MenuItem>
+                      <MenuItem value="./images/gears.png">./images/gears.png</MenuItem>
+                      <MenuItem value="./images/pause.png">./images/pause.png</MenuItem>
+                      <MenuItem value="./images/scene.png">./images/scene.png</MenuItem>
+                    </Field>
+                  </FormControl>
+                  <Field
+                    name="visual.inactive.color"
+                    label="Color"
+                    component={TextField}
+                    fullWidth
+                    className={classes.field}
+                  />
+                  <Field
+                    name="visual.inactive.text"
+                    label="Text"
+                    component={TextField}
+                    fullWidth
+                    className={classes.field}
+                  />
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+              {hasLayout(values) && (
+                <Button
+                  onClick={() => editNestedLayout(currentIndex)}
+                  className={classes.editLayoutButton}
+                >
+                  Edit Nested Layout
+                </Button>
               )}
             </form>
           )}
